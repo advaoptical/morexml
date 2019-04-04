@@ -1,6 +1,6 @@
 # moreXML >>> eXcitinglyMORE pythonicity on top of LXML's efficiency
 #
-# Copyright (C) 2019 ADVA Optical Networking SE
+# Copyright (C) 2019 ADVA Optical Networking
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
