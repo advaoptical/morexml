@@ -9,7 +9,8 @@ moreXML >>> eXcitinglyMORE pythonicity on top of LXML's efficiency
     >
 </a>
 
-> A **Free** and OpenSource project of [ADVA Optical Networking][advaoptical]
+moreXML is a **Free** OpenSource project of [
+  ADVA Optical Networking][advaoptical]
 
 [advaoptical]: https://advaoptical.com
 
@@ -17,11 +18,11 @@ moreXML >>> eXcitinglyMORE pythonicity on top of LXML's efficiency
 
 [license]: http://www.apache.org/licenses/LICENSE-2.0
 
-> An extension of [MOREtools][moretools] >>> **M**ORE **O**verly **R**eusable
-> **E**ssentials for python
+An extension of [MOREtools][moretools] >>> **M**ORE **O**verly **R**eusable
+**E**ssentials for python
 
 [moretools]: https://github.com/zimmermanncode/moretools
 
-* Integrates `lxml.etree` with `moretools.SimpleTree` into a new approach of
-  XML tree creation and processing based on a single API entry point:
-  `morexml.XML` 
+So what's the purpose of moreXML? It integrates `lxml.etree` with
+`moretools.SimpleTree` into a new approach of XML tree creation and
+processing, all based on a single API entry point: `morexml.XML` 
