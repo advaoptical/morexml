@@ -12,7 +12,7 @@ moreXML >>> eXcitinglyMORE pythonicity on top of LXML's efficiency
 **moreXML** is a **Free OpenSource** project of [
   ADVA Optical Networking][advaoptical]
 
-[advaoptical]: https://advaoptical.com
+[advaoptical]: https://www.advaoptical.com
 
 > **Licensed** under the [Apache License, Version 2.0][license]
 
