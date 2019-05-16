@@ -337,18 +337,20 @@ class XML(with_metaclass(XMLMeta, SimpleTree)):
     @parent.setter
     def parent(self, parentxml):
         tag = self.element.tag
-        # check if tag prefix needs to be exchanged with namespace URI
-        prefix = self._prefix
-        if prefix is not None:
-            uri = self.xmlns().get(prefix)
-            if uri is None and parentxml is not None:
-                uri = parentxml.xmlns().get(prefix)
-            if uri is None:
-                raise NSLookupError(
-                    "Unknown prefix {!r} in XML tag {!r}"
-                    .format(prefix, ":".join((prefix, tag))))
+        if not tag.startswith('{'):
+            # check if temporarily stored namespace prefix from instantiation
+            # needs to be exchanged with namespace URI
+            prefix = self._prefix
+            if prefix is not None:
+                uri = self.xmlns().get(prefix)
+                if uri is None and parentxml is not None:
+                    uri = parentxml.xmlns().get(prefix)
+                if uri is None:
+                    raise NSLookupError(
+                        "Unknown prefix {!r} in XML tag {!r}"
+                        .format(prefix, ":".join((prefix, tag))))
 
-            self.element.tag = "{{{}}}{}".format(uri, tag)
+                self.element.tag = "{{{}}}{}".format(uri, tag)
         if parentxml is not None:
             self._parent = parentxml
             parentxml.sub._list.append(self)
