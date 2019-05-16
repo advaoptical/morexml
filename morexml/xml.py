@@ -315,6 +315,10 @@ class XML(with_metaclass(XMLMeta, SimpleTree)):
         raise NotImplementedError(
             "Instantiating morexml.XML from XML text is not implemented yet")
 
+    def __copy__(self):
+        # TODO: include subtree
+        return XML[self.tag](attrs=self.element.attrib, xmlns=self.xmlns())
+
     @property
     def parent(self):
         """
