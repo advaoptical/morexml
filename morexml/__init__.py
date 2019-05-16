@@ -35,6 +35,7 @@ third-party dependencies
 
 from __future__ import absolute_import
 
+from . import xmlpath
 from .xml import XML
 
 __import__('zetup').toplevel(__name__, (
