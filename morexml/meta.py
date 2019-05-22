@@ -81,14 +81,18 @@ class XMLMeta(type(SimpleTree)):
                 tag = type(self)._tag
                 if not tag.startswith('{') and ':' in tag:
                     # HACK: lxml Element creation doesn't support prefix:name
-                    # tag scheme ==> temporary store prefix and prepend {URI}
-                    # later to Element tag
+                    # tag scheme ==> temporarily store prefix and prepend
+                    # {URI} later to Element tag
                     self._prefix, name = tag.split(':', 1)
                 else:
                     name = tag
 
-                attrs = dict(attrs) if attrs is not None else {}
-                attrs.update({
+                # HACK: lxml Element creation also doesn't support prefix:name
+                # scheme for attributes ==> also temporarily store all
+                # attributes and exchange prefixes with {URI}s later before
+                # finally adding attributes to lxml Element
+                self._attrs = dict(attrs) if attrs is not None else {}
+                self._attrs.update({
                     pyname_to_xmlname(attr): unicode(value)
                     for attr, value in kwattrs.items()})
 
@@ -99,7 +103,7 @@ class XMLMeta(type(SimpleTree)):
                         nsctx.update(xmlns)
                     xmlns = nsctx
 
-                self._element = Element(name, attrib=attrs, nsmap=xmlns)
+                self._element = Element(name, nsmap=xmlns)
                 # call super().__init__ last because self._element must exist
                 # to make parent assignment via moretools.SimpleTree.__init__
                 # work

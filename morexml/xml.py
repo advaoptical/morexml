@@ -124,6 +124,9 @@ class XML(with_metaclass(XMLMeta, SimpleTree)):
     #: A temporary prefix store for creation of ``XML['prefix:name']`` trees.
     _prefix = None
 
+    #: A temporary store for supporting ``{'prefix:name': 'value'}`` attributes.
+    _attrs = None
+
     #: The internal lxml ``Element`` instance as node of this XML (sub-)tree.
     _element = None
 
@@ -341,20 +344,39 @@ class XML(with_metaclass(XMLMeta, SimpleTree)):
     @parent.setter
     def parent(self, parentxml):
         tag = self.element.tag
+        xmlns = dict(parentxml.xmlns()) if parentxml is not None else {}
+        xmlns.update(self.xmlns())
+
         if not tag.startswith('{'):
             # check if temporarily stored namespace prefix from instantiation
             # needs to be exchanged with namespace URI
             prefix = self._prefix
             if prefix is not None:
-                uri = self.xmlns().get(prefix)
-                if uri is None and parentxml is not None:
-                    uri = parentxml.xmlns().get(prefix)
-                if uri is None:
+                try:
+                    uri = xmlns[prefix]
+                except KeyError:
                     raise NSLookupError(
                         "Unknown prefix {!r} in XML tag {!r}"
                         .format(prefix, ":".join((prefix, tag))))
 
                 self.element.tag = "{{{}}}{}".format(uri, tag)
+            self._prefix = None
+
+        attrs = self._attrs
+        if attrs is not None:
+            for key, value in attrs.items():
+                if not key.startswith('{') and ':' in key:
+                    prefix, name = key.split(':', 1)
+                    try:
+                        uri = xmlns[prefix]
+                    except KeyError:
+                        raise NSLookupError(
+                            "Unknown prefix {!r} in XML attribute {!r}"
+                            .format(prefix, key))
+
+                    key = "{{{}}}{}".format(uri, name)
+                self.element.set(key, value)
+
         if parentxml is not None:
             self._parent = parentxml
             parentxml.sub._list.append(self)
