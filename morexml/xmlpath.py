@@ -195,6 +195,25 @@ class Path(zetup.object):
 
         return segments_to_xml(self._segments)
 
+    def to_xpath(self):
+        # TODO: message
+        assert all(isinstance(seg, Tagged) for seg in self._segments)
+
+        def segment_to_xpath(segment):
+            tag = segment.tag
+            if ':' in tag:
+                prefix, tag = tag.split(':')
+                uri = segment.xmlns()[prefix]
+            else:
+                uri = None
+
+            filters = "name()='{}'".format(tag)
+            if uri is not None:
+                filters += " and namespace-uri()='{}'".format(uri)
+            return "*[{}]".format(filters)
+
+        return '/'.join(map(segment_to_xpath, self._segments))
+
     def __repr__(self):
         """Create an XPath-style representation."""
         return "{}: {}".format(qualname(type(self)), self)
