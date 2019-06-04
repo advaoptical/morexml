@@ -61,7 +61,7 @@ class Element(Segment):
         assert index is None or isinteger(index)
 
         tag = self._tag if self._tag not in '.*' else 'X'
-        self._xml = XML[tag](xmlns=xmlns, **xmlattrs)
+        self._xml = XML.root[tag](xmlns=xmlns, **xmlattrs)
         self._index = index
 
     def __str__(self):
@@ -87,7 +87,19 @@ class Tagged(Element):
         super(Tagged, self).__init__(index=index, xmlns=xmlns, **xmlattrs)
 
 
-class Path(zetup.object):
+class Meta(zetup.meta):
+
+    def segment_to_xml(cls, segment, root=False):
+        # TODO: exception type + message
+        assert isinstance(segment._xml, XML)
+
+        if root:
+            return segment._xml.to_root()
+
+        return copy(segment._xml)
+
+
+class Path(zetup.object, metaclass=Meta):
     """The :class:`morexml.XML.Path` factory."""
 
     # used by zetup.meta's class __repr__ instead of __module__
@@ -183,17 +195,19 @@ class Path(zetup.object):
     def __str__(self):
         return '/'.join(str(seg) for seg in self._segments)
 
-    def to_xml(self):
-        # TODO: message
+    def to_xml(self, root=False):
+        # TODO: exception type + message
         assert all(isinstance(seg, Tagged) for seg in self._segments)
 
-        def segments_to_xml(segments):
-            with copy(segments[0]._xml) as xml:  # pylint: disable=no-member
+        cls = type(self)
+
+        def segments_to_xml(segments, _root=False):
+            with cls.segment_to_xml(segments[0], root=_root) as xml:
                 if len(segments) > 1:
                     segments_to_xml(segments[1:])
             return xml
 
-        return segments_to_xml(self._segments)
+        return segments_to_xml(self._segments, _root=root)
 
     def to_xpath(self):
         # TODO: message

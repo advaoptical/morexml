@@ -318,9 +318,20 @@ class XML(with_metaclass(XMLMeta, SimpleTree)):
         raise NotImplementedError(
             "Instantiating morexml.XML from XML text is not implemented yet")
 
-    def __copy__(self):
-        # TODO: include subtree
-        return XML[self.tag](attrs=self.element.attrib, xmlns=self.xmlns())
+    def __copy__(self, root=False):
+        def copy_tree(xml, _root=False):
+            xmlcls = XML[xml.tag] if not _root else XML.root[xml.tag]
+            with xmlcls(
+                    attrs=xml.element.attrib, xmlns=xml.xmlns()
+            ) as xml_copy:
+                if xml.text is not None:
+                    xml_copy.text = xml.text
+                for subxml in xml.sub:
+                    copy_tree(subxml)
+
+            return xml_copy
+
+        return copy_tree(self, _root=root)
 
     @property
     def parent(self):
@@ -512,6 +523,9 @@ class XML(with_metaclass(XMLMeta, SimpleTree)):
 
     if PY2:
         __unicode__ = __str__  # pragma: no cover
+
+    def to_root(self):
+        return self.__copy__(root=True)
 
     def __repr__(self):
         """Create an XML text representation from this (sub-)tree."""
