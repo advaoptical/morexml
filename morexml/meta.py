@@ -104,10 +104,10 @@ class XMLMeta(type(SimpleTree)):
                     xmlns = nsctx
 
                 self._element = Element(name, nsmap=xmlns)
-                # call super().__init__ last because self._element must exist
-                # to make parent assignment via moretools.SimpleTree.__init__
-                # work
-                super(cls, self).__init__()  # pylint: disable=bad-super-call
+                # call basic SimpleTree.__init__ last because self._element
+                # must exist to make the implicit parent assignment in
+                #  SimpleTree.__init__ work
+                SimpleTree.__init__(self)  # pylint: disable=bad-super-call
 
         taggedcls.__name__ = tag
         taggedcls.__qualname__ = "{}[{!r}]".format(qualname(cls), tag)
